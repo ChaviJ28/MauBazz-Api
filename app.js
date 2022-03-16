@@ -4,7 +4,7 @@ let express = require("express"),
     mysql = require("mysql");
 
 // set port, JSON, .env
-var port = '3000';
+var port = '4000';
 app.use(bodyparser.json());
 require("dotenv").config();
 
@@ -28,8 +28,8 @@ app.get('*', (req, res) => {
 const m = require('./middleware/index.js');
 app.use(m.checkApiKey);
 
-app.post('/', (req, res) => {
-    res.json('Hi')
+app.post('/api/test', (req, res) => {
+    res.send(req.body);
 })
 
 app.listen(port, (req, res) => {
