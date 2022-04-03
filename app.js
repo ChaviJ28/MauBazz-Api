@@ -17,6 +17,10 @@ connection.connect(function(err) {
     console.log("Connected to the MySQL server.");
 });
 
+app.get("*", (req, res) => {
+    res.send("<h2>404 - Not Found</h2>");
+});
+
 const m = require("./middleware/index.js");
 app.use(m.checkApiKey);
 
@@ -27,10 +31,6 @@ app.use("/api/admin", adminRoutes);
 app.post('/api/test', (req, res) => {
     res.send(req.body);
 })
-
-app.get("*", (req, res) => {
-    res.send("<h2>404 - Not Found</h2>");
-});
 
 app.listen(port, (req, res) => {
     console.log("Node on " + port + ", " + process.env.NODE_ENV + " environment");
