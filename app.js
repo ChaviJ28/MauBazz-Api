@@ -1,6 +1,7 @@
 let express = require("express"),
     app = express(),
     bodyparser = require("body-parser"),
+    bcrypt = require("bcrypt"),
     mysql = require("mysql");
 
 // set port, JSON, .env
@@ -18,18 +19,31 @@ connection.connect(function(err) {
 });
 
 app.get("*", (req, res) => {
-    res.send("<h2>404 - Not Found</h2>");
+    const hash = bcrypt.hashSync("default123", parseInt(process.env.HASH_SALT));
+    res.send("<h2>404 - Not Found</h2><p>" + hash + "</p>");
 });
 
-const m = require("./middleware/index.js");
-app.use(m.checkApiKey);
+const middleware = require("./middleware/index.js");
+app.use(middleware.checkApiKey);
 
-const adminRoutes = require("./routes/admin/admin.js")
+const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin/admin.js");
+const ownerRoutes = require("./routes/owner/owner.js");
+const publicRoutes = require("./routes/public/shop.js");
 
+app.use("/api/", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/user", ownerRoutes);
+app.use("/api/v1", publicRoutes);
 
 app.post('/api/test', (req, res) => {
-    res.send(req.body);
+    connection.query(req.body.data.sql, async(err, results) => {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(results);
+        }
+    })
 })
 
 app.listen(port, (req, res) => {

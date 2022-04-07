@@ -6,7 +6,7 @@ CREATE TABLE shop(
     brand_name VARCHAR(255),
     trade_name VARCHAR(255),
     logo_url VARCHAR(255),
-    color JSON, 
+    color VARCHAR(10), 
     banner_url JSON,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_on DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -151,7 +151,7 @@ CREATE TABLE order_details(
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
-INSERT INTO user_admin(username, pwd, full_name, email, status) VALUES("admin", "admin789", "Admin", "admin@maubazz.mu", true);
+INSERT INTO user_admin(username, pwd, full_name, email, status) VALUES("admin", "$2b$08$qLiWOfBN6qpjF.ElfEToGOGM0Jpq.i.oB25mUHSaqG08nTjMIUefC", "Admin", "admin@maubazz.mu", true);
 
 
 

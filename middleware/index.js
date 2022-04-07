@@ -1,18 +1,39 @@
-var obj = {};
+var response = require("../routes/functions"),
+    mysql = require("mysql"),
+    connection = mysql.createConnection(require('../db'));
+
+
 
 // middleware for checking api_key
-obj.checkApiKey = (req, res, next) => {
+exports.checkApiKey = async(req, res, next) => {
     if (req.body.auth && req.body.auth.api_key && req.body.auth.api_key == process.env.API_KEY) {
         next();
     } else {
-        res.json({
-            error: {
-                status: 403,
-                code: "Forbidden",
-                message: "API_KEY Error",
-            },
-        });
+        res.json(await response.error(403, "api-key error"));
     }
 };
 
-module.exports = obj;
+exports.checkAuth = async(req, res, next) => {
+    if (req.body.auth && req.body.auth.user) {
+        if (req.body.auth.user.access_type == "admin") {
+            var sql = 'SELECT status, username FROM user_admin WHERE username="' + req.body.auth.user.username + '"'
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500));
+                } else {
+                    if (results.length > 0 && results[0].status == 1) {
+                        next();
+                    } else {
+                        res.json(await response.error(403, "Account has been suspended"));
+                    }
+                }
+            })
+        } else if (req.body.auth.user.access_type == "owner") {
+            //check in shop_owner
+        } else {
+            res.json(await response.error(400, "corrupt userdata, login again"));
+        }
+    } else {
+        res.json(await response.error(401, "User does not exist"));
+    }
+}

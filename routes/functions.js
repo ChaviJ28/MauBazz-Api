@@ -17,7 +17,7 @@ exports.error = async(status, msg) => {
             code = "Internal Server Error";
             break;
     }
-    if (msg = undefined) {
+    if (msg == undefined) {
         msg = "Please try again later"
     } {
         json = {
