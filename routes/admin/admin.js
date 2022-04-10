@@ -6,37 +6,8 @@ let express = require("express"),
     response = require("../functions"),
     middleware = require("../../middleware/index");
 
+//add-shop, deactivate-shop
 
-// router.post("/login", async(req, res) => {
-//     try {
-//         var sql = 'SELECT * FROM user_admin WHERE username="' + req.body.data.username + '"';
-//         connection.query(sql, async(err, results) => {
-//             if (err) {
-//                 res.json(await response.error(500));
-//             } else {
-//                 if (results.length > 0) {
-//                     if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
-//                         if (results[0].status == 1) {
-//                             delete results[0].pwd;
-//                             results[0].access_type = "admin";
-//                             res.json(await response.respond(results[0]));
-//                         } else {
-//                             res.json(
-//                                 await response.error(403, "Account has been suspended")
-//                             );
-//                         }
-//                     } else {
-//                         res.json(await response.error(401, "Wrong Password"));
-//                     }
-//                 } else {
-//                     res.json(await response.error(400, "User does not exist"));
-//                 }
-//             }
-//         });
-//     } catch (err) {
-//         res.json(await response.error(500));
-//     }
-// })
 
 router.post("/add-shop", middleware.checkAuth, async(req, res) => {
     try {

@@ -6,22 +6,23 @@ let express = require("express"),
     response = require("../functions"),
     middleware = require("../../middleware/index");
 
-// update, change pwd, forget pwd
+// DONE : update-shop, update-shop-owner, change-pwd, add-product
+// TO-DO: forget pwd
 
-//change pwd
+//change-pwd
 router.post("/change-password", middleware.checkAuth, async(req, res) => {
     try {
         var sql =
-            'SELECT * FROM shop_owner WHERE email="' +
-            req.body.data.email +
+            'SELECT * FROM shop_owner WHERE id="' +
+            req.body.auth.user.id +
             '"';
         connection.query(sql, async(err, results) => {
             if (err) {
                 res.json(await response.error(500));
             } else {
                 if (results.length > 0) {
-                    if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
-                        const hash = bcrypt.hashSync("default123", parseInt(process.env.HASH_SALT));
+                    if (req.body.data.oldpassword && req.body.data.password && bcrypt.compareSync(req.body.data.oldpassword, results[0].pwd)) {
+                        const hash = bcrypt.hashSync(req.body.data.password, parseInt(process.env.HASH_SALT));
                         var sql = "UPDATE shop_owner set pwd = '" + hash + "' WHERE id=" + results[0].id;
                         connection.query(sql, async(err, sts) => {
                             if (err) {
@@ -36,9 +37,11 @@ router.post("/change-password", middleware.checkAuth, async(req, res) => {
                                 }
                             }
                         });
+                    } else {
+                        res.json(await response.error(400, "Wrong password"));
                     }
                 } else {
-                    res.json(await response.error(400, "This email is not affliated with any user"));
+                    res.json(await response.error(400, "User does not exist"));
                 }
             }
         })
@@ -56,16 +59,15 @@ router.post("/update", middleware.checkAuth, async(req, res) => {
                 req.body.data.owner.full_name != null &&
                 req.body.data.owner.full_name.length > 0 &&
                 req.body.data.owner.contact &&
-                req.body.data.owner.contact != null &&
-                req.body.data.owner.contact.length > 0
+                req.body.data.owner.contact != null
             ) {
                 var sql =
                     "UPDATE shop_owner SET full_name = '" +
                     req.body.data.owner.full_name +
                     "', contact = '" +
-                    JSON.stringify(req.body.data.shop.banner_url) +
-                    "' WHERE shop_id = '" +
-                    req.body.data.owner.contact +
+                    JSON.stringify(req.body.data.owner.contact) +
+                    "' WHERE id = '" +
+                    req.body.auth.user.id +
                     "';";
                 connection.query(sql, async(err, results) => {
                     if (err) {
@@ -136,6 +138,56 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
             res.json(await response.error(400, "No Data"));
         }
     } catch (err) {
+        res.json(await response.error(500, err));
+    }
+});
+
+//  add-product, TODO: add category,
+router.post("/add-product", middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data && req.body.data.product && req.body.data.shop) {
+            var product = req.body.data.product;
+            var shop = req.body.data.shop;
+            var sql =
+                "INSERT INTO product(title, descri, price, color, size, stock, img_url) VALUES('" +
+                product.title +
+                "', '" +
+                product.description +
+                "', " +
+                product.price +
+                ", '" +
+                JSON.stringify(product.color) +
+                "', '" +
+                JSON.stringify(product.size) +
+                "', " +
+                product.stock +
+                ", '" +
+                JSON.stringify(product.img_url) +
+                "');";
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    sql =
+                        "INSERT INTO product_shop(product_id, shop_id) VALUES(" +
+                        results.insertId +
+                        ", " +
+                        shop.shop_id +
+                        ");";
+                    connection.query(sql, async(err, results) => {
+                        if (err) {
+                            res.json(await response.error(500, err.msg));
+                        } else {
+                            res.json(await response.success("product added successfully"));
+                        }
+                    });
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
         res.json(await response.error(500, err));
     }
 });

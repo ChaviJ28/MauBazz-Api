@@ -24,12 +24,23 @@ exports.checkAuth = async(req, res, next) => {
                     if (results.length > 0 && results[0].status == 1) {
                         next();
                     } else {
-                        res.json(await response.error(403, "Account has been suspended"));
+                        res.json(await response.error(403, "Account does not exist or has been suspended"));
                     }
                 }
             })
         } else if (req.body.auth.user.access_type == "owner") {
-            //check in shop_owner
+            var sql = 'SELECT is_active, username FROM shop_owner WHERE username="' + req.body.auth.user.username + '"'
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500));
+                } else {
+                    if (results.length > 0 && results[0].is_active == 1) {
+                        next();
+                    } else {
+                        res.json(await response.error(403, "Account does not exist or has been suspended"));
+                    }
+                }
+            })
         } else {
             res.json(await response.error(400, "corrupt userdata, login again"));
         }

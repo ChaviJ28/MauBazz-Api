@@ -2,7 +2,8 @@ let express = require("express"),
     app = express(),
     bodyparser = require("body-parser"),
     bcrypt = require("bcrypt"),
-    mysql = require("mysql");
+    mysql = require("mysql"),
+    path = require("path");
 
 // set port, JSON, .env
 require("dotenv").config();
@@ -19,8 +20,8 @@ connection.connect(function(err) {
 });
 
 app.get("*", (req, res) => {
-    const hash = bcrypt.hashSync("default123", parseInt(process.env.HASH_SALT));
-    res.send("<h2>404 - Not Found</h2><p>" + hash + "</p>");
+    res.sendFile(path.join(__dirname + "/views/error.html"));
+
 });
 
 const middleware = require("./middleware/index.js");
@@ -33,7 +34,7 @@ const publicRoutes = require("./routes/public/shop.js");
 
 app.use("/api/", authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/user", ownerRoutes);
+app.use("/api/owner", ownerRoutes);
 app.use("/api/v1", publicRoutes);
 
 app.post('/api/test', (req, res) => {
