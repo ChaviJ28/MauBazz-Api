@@ -38,13 +38,17 @@ app.use("/api/owner", ownerRoutes);
 app.use("/api/v1", publicRoutes);
 
 app.post('/api/test', (req, res) => {
-    connection.query(req.body.data.sql, async(err, results) => {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json(results);
-        }
-    })
+    if (process.env.NODE_ENV == 'development') {
+        connection.query(req.body.data.sql, async(err, results) => {
+            if (err) {
+                res.json(err);
+            } else {
+                res.json(results);
+            }
+        })
+    } else {
+        res.json(req);
+    }
 })
 
 app.listen(port, (req, res) => {
