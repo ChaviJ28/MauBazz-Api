@@ -30,6 +30,7 @@ app.use(middleware.checkApiKey);
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin/admin.js");
 const ownerRoutes = require("./routes/owner/owner.js");
+const imageRoutes = require("./routes/owner/image.js");
 const publicRoutes = require("./routes/public/shop.js");
 
 app.use("/api/", authRoutes);
@@ -47,7 +48,7 @@ app.post('/api/test', (req, res) => {
             }
         })
     } else {
-        res.json(req);
+        res.json(req.body);
     }
 })
 

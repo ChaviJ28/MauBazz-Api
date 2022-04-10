@@ -24,7 +24,6 @@ CREATE TABLE product(
     color JSON, 
     size JSON,
     stock int,
-    img_url JSON,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_on DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(product_id)
@@ -40,6 +39,14 @@ CREATE TABLE product_shop(
     FOREIGN KEY (shop_id) REFERENCES shop(shop_id)
 );
 
+CREATE TABLE product_image(
+    id int NOT NULL AUTO_INCREMENT,
+    product_id int NOT NULL,
+    img_url VARCHAR(255),
+    PRIMARY KEY(id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
+
 CREATE TABLE category(
     id int NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -50,17 +57,19 @@ CREATE TABLE category(
 CREATE TABLE shop_category(
     id int NOT NULL AUTO_INCREMENT,
     shop_id int,
-    name VARCHAR(255),
+    cat_id int,
     PRIMARY KEY(id),
     FOREIGN KEY (shop_id) REFERENCES shop(shop_id)
+    FOREIGN KEY (cat_id) REFERENCES category(cat_id)
 );
 
 CREATE TABLE product_category(
     id int NOT NULL AUTO_INCREMENT,
     product_id int,
-    name VARCHAR(255),
+    cat_id int,
     PRIMARY KEY(id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
+    FOREIGN KEY (cat_id) REFERENCES category(cat_id)
 );
 
 CREATE TABLE user(

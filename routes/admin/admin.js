@@ -3,7 +3,7 @@ let express = require("express"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions"),
+    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 //add-shop, deactivate-shop
@@ -45,6 +45,49 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
             });
         } else {
             res.json(await response.error(400, "corrupt shopdata, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
+    }
+});
+
+//add-category
+router.post("/add-category", middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data) {
+            var sql = "INSERT INTO category(name)VALUES('" + req.body.data.name + "');";
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(await response.success("category added successfully"));
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
+    }
+});
+
+//get-category
+router.post("/get-category", middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data) {
+            var sql =
+                "SELECT * FROM category";
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(await response.respond(results));
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
         }
     } catch (err) {
         console.log(err);

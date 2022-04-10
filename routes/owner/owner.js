@@ -3,52 +3,11 @@ let express = require("express"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions"),
+    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 // DONE : update-shop, update-shop-owner, change-pwd, add-product
 // TO-DO: forget pwd
-
-//change-pwd
-router.post("/change-password", middleware.checkAuth, async(req, res) => {
-    try {
-        var sql =
-            'SELECT * FROM shop_owner WHERE id="' +
-            req.body.auth.user.id +
-            '"';
-        connection.query(sql, async(err, results) => {
-            if (err) {
-                res.json(await response.error(500));
-            } else {
-                if (results.length > 0) {
-                    if (req.body.data.oldpassword && req.body.data.password && bcrypt.compareSync(req.body.data.oldpassword, results[0].pwd)) {
-                        const hash = bcrypt.hashSync(req.body.data.password, parseInt(process.env.HASH_SALT));
-                        var sql = "UPDATE shop_owner set pwd = '" + hash + "' WHERE id=" + results[0].id;
-                        connection.query(sql, async(err, sts) => {
-                            if (err) {
-                                res.json(await response.error(500));
-                            } else {
-                                if (sts.affectedRows > 0) {
-                                    res.json(await response.success("password updated successfully"));
-                                } else {
-                                    res.json(
-                                        await response.error(500, "update error")
-                                    );
-                                }
-                            }
-                        });
-                    } else {
-                        res.json(await response.error(400, "Wrong password"));
-                    }
-                } else {
-                    res.json(await response.error(400, "User does not exist"));
-                }
-            }
-        })
-    } catch (err) {
-        res.json(await response.error(500, err));
-    }
-})
 
 //update-shop-owner
 router.post("/update", middleware.checkAuth, async(req, res) => {
@@ -106,7 +65,8 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                 req.body.data.shop.color.length > 0 &&
                 req.body.data.shop.banner_url &&
                 req.body.data.shop.banner_url != null &&
-                req.body.data.shop.banner_url.length > 0
+                req.body.data.shop.banner_url.length > 0 &&
+                req.body.data.shop.category.length > 0
             ) {
                 var sql =
                     "UPDATE shop SET brand_name = '" +
@@ -123,8 +83,15 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                     req.body.data.shop.shop_id +
                     "'; UPDATE shop_owner SET is_active=true WHERE shop_id = '" +
                     req.body.data.shop.shop_id +
-                    "';";
-                connection.query(sql, async(err, results) => {
+                    "';",
+                    add = "";
+                req.body.data.shop.category.forEach(cat, (index) => {
+                    add +=
+                        "INSERT INTO shop_category(shop_id, cat_id) VALUES ('" +
+                        cat +
+                        "');";
+                });
+                connection.query(sql + add, async(err, results) => {
                     if (err) {
                         res.json(await response.error(500, err));
                     } else {
@@ -149,7 +116,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
             var product = req.body.data.product;
             var shop = req.body.data.shop;
             var sql =
-                "INSERT INTO product(title, descri, price, color, size, stock, img_url) VALUES('" +
+                "INSERT INTO product(title, descri, price, color, size, stock) VALUES('" +
                 product.title +
                 "', '" +
                 product.description +
@@ -161,9 +128,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                 JSON.stringify(product.size) +
                 "', " +
                 product.stock +
-                ", '" +
-                JSON.stringify(product.img_url) +
-                "');";
+                ");";
             connection.query(sql, async(err, results) => {
                 if (err) {
                     res.json(await response.error(500, err));

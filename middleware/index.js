@@ -1,4 +1,4 @@
-var response = require("../routes/functions"),
+var response = require("../routes/functions/functions"),
     mysql = require("mysql"),
     connection = mysql.createConnection(require('../db'));
 
@@ -29,12 +29,12 @@ exports.checkAuth = async(req, res, next) => {
                 }
             })
         } else if (req.body.auth.user.access_type == "owner") {
-            var sql = 'SELECT is_active, username FROM shop_owner WHERE username="' + req.body.auth.user.username + '"'
+            var sql = 'SELECT is_active, username, login_count FROM shop_owner WHERE username="' + req.body.auth.user.username + '"'
             connection.query(sql, async(err, results) => {
                 if (err) {
                     res.json(await response.error(500));
                 } else {
-                    if (results.length > 0 && results[0].is_active == 1) {
+                    if (results.length > 0 && (results[0].is_active == 1 || results[0].login_count == 1)) {
                         next();
                     } else {
                         res.json(await response.error(403, "Account does not exist or has been suspended"));
