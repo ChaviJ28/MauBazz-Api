@@ -3,6 +3,24 @@
 //del img by id
 //function to add arr of imgs from specif prod(add_prod)
 
-exports.createImages = async(arr) => {
-    return bcrypt.hashSync("default123", parseInt(process.env.HASH_SALT));
+let express = require("express"),
+    multer = require("multer");
+
+exports.uploadImage = (req, res, next) => {
+    //Image Settings
+    const imageStorage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, "public/images");
+        },
+        filename: (req, file, cb) => {
+            cb(null, file.originalname);
+        },
+    });
+    const imageFileFilter = (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error("You can upload only image files!"), false);
+        }
+        cb(null, true);
+    };
+    return multer({ imageFileFilter, imageStorage });
 };

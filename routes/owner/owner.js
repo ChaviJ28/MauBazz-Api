@@ -50,6 +50,7 @@ router.post("/update", middleware.checkAuth, async(req, res) => {
 router.post("/update-shop", middleware.checkAuth, async(req, res) => {
     try {
         if (req.body.data && req.body.data.shop) {
+
             if (
                 req.body.data.shop.brand_name &&
                 req.body.data.shop.brand_name != null &&
@@ -65,9 +66,9 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                 req.body.data.shop.color.length > 0 &&
                 req.body.data.shop.banner_url &&
                 req.body.data.shop.banner_url != null &&
-                req.body.data.shop.banner_url.length > 0 &&
-                req.body.data.shop.category.length > 0
+                req.body.data.shop.banner_url.length > 0
             ) {
+
                 var sql =
                     "UPDATE shop SET brand_name = '" +
                     req.body.data.shop.brand_name +
@@ -83,15 +84,8 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                     req.body.data.shop.shop_id +
                     "'; UPDATE shop_owner SET is_active=true WHERE shop_id = '" +
                     req.body.data.shop.shop_id +
-                    "';",
-                    add = "";
-                req.body.data.shop.category.forEach(cat, (index) => {
-                    add +=
-                        "INSERT INTO shop_category(shop_id, cat_id) VALUES ('" +
-                        cat +
-                        "');";
-                });
-                connection.query(sql + add, async(err, results) => {
+                    "';";
+                connection.query(sql, async(err, results) => {
                     if (err) {
                         res.json(await response.error(500, err));
                     } else {
@@ -154,6 +148,64 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
     } catch (err) {
         console.log(err);
         res.json(await response.error(500, err));
+    }
+});
+
+//add-category
+router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data && req.body.data.category && req.body.data.shop_id) {
+            var data = req.body.data,
+                sql = ""
+            var arr = Array.from(data.category);
+            arr.forEach(cat => {
+                sql += "INSERT INTO shop_category(shop_id, cat_id) VALUES (" + data.shop_id + ", " + cat + "); "
+            });
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(await response.success("shop categories added successfully"));
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
+    }
+});
+
+router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data && req.body.data.category && req.body.data.shop_id) {
+            var data = req.body.data,
+                sql = "";
+            var arr = Array.from(data.category);
+            arr.forEach((cat) => {
+                sql +=
+                    "INSERT INTO shop_category(shop_id, cat_id) VALUES (" +
+                    data.shop_id +
+                    ", " +
+                    cat +
+                    "); ";
+            });
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(
+                        await response.success("shop categories added successfully")
+                    );
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
     }
 });
 

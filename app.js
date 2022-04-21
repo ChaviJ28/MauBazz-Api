@@ -25,7 +25,7 @@ app.get("*", (req, res) => {
 });
 
 const middleware = require("./middleware/index.js");
-app.use(middleware.checkApiKey);
+// app.use(middleware.checkApiKey);
 
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin/admin.js");
@@ -36,6 +36,7 @@ const publicRoutes = require("./routes/public/shop.js");
 app.use("/api/", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/owner", ownerRoutes);
+app.use("/api/image", imageRoutes);
 app.use("/api/v1", publicRoutes);
 
 app.post('/api/test', (req, res) => {

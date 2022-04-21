@@ -73,26 +73,6 @@ router.post("/add-category", middleware.checkAuth, async(req, res) => {
     }
 });
 
-//get-category
-router.post("/get-category", middleware.checkAuth, async(req, res) => {
-    try {
-        if (req.body.data) {
-            var sql =
-                "SELECT * FROM category";
-            connection.query(sql, async(err, results) => {
-                if (err) {
-                    res.json(await response.error(500, err));
-                } else {
-                    res.json(await response.respond(results));
-                }
-            });
-        } else {
-            res.json(await response.error(400, "corrupt data, try again"));
-        }
-    } catch (err) {
-        console.log(err);
-        res.json(await response.error(500));
-    }
-});
+
 
 module.exports = router;

@@ -1,8 +1,7 @@
 var response = require("../routes/functions/functions"),
     mysql = require("mysql"),
-    connection = mysql.createConnection(require('../db'));
-
-
+    connection = mysql.createConnection(require('../db')),
+    multer = require("multer");
 
 // middleware for checking api_key
 exports.checkApiKey = async(req, res, next) => {
@@ -47,4 +46,4 @@ exports.checkAuth = async(req, res, next) => {
     } else {
         res.json(await response.error(401, "User does not exist"));
     }
-}
+};

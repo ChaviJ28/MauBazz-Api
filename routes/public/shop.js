@@ -11,13 +11,13 @@ router.post("/get-shop", async(req, res) => {
         var add = "";
         if (req.body.data.search) {
             if (req.body.data.search.id) {
-                add = " WHERE shop_id=" + req.body.data.search.id;
+                add = " WHERE shop.shop_id=" + req.body.data.search.id;
             }
             if (req.body.data.search.brand_name) {
                 add = " WHERE brand_name LIKE '%" + req.body.data.search.brand_name + "%'";
             }
         }
-        var sql = "SELECT * FROM shop, category" + add;
+        var sql = "SELECT * FROM shop " + add;
         connection.query(sql, async(err, results) => {
             if (err) {
                 res.json(await response.error(500, err));
@@ -78,6 +78,36 @@ router.post("/get-product", async(req, res) => {
     }
 });
 
+
+//get-category
+router.post("/get-category", middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data) {
+            if (req.body.data.search) {
+                if (req.body.data.search.shop_id) {
+                    add = " WHERE shop_id=" + req.body.data.search.shop_id;
+                }
+                if (req.body.data.search.cat_id) {
+                    add = " WHERE cat_id=" + req.body.data.search.cat_id;
+                }
+            }
+            var sql =
+                "SELECT * FROM category";
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(await response.respond(results));
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
+    }
+});
 
 
 module.exports = router;

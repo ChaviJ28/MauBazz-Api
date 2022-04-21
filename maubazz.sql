@@ -48,9 +48,9 @@ CREATE TABLE product_image(
 );
 
 CREATE TABLE category(
-    id int NOT NULL AUTO_INCREMENT,
+    cat_id int NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
-    PRIMARY KEY(id),
+    PRIMARY KEY(cat_id),
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE shop_category(
     shop_id int,
     cat_id int,
     PRIMARY KEY(id),
-    FOREIGN KEY (shop_id) REFERENCES shop(shop_id)
+    FOREIGN KEY (shop_id) REFERENCES shop(shop_id),
     FOREIGN KEY (cat_id) REFERENCES category(cat_id)
 );
 
@@ -68,7 +68,7 @@ CREATE TABLE product_category(
     product_id int,
     cat_id int,
     PRIMARY KEY(id),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
+    FOREIGN KEY (product_id) REFERENCES product(product_id),
     FOREIGN KEY (cat_id) REFERENCES category(cat_id)
 );
 
@@ -160,7 +160,7 @@ CREATE TABLE order_details(
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
-INSERT INTO user_admin(username, pwd, full_name, email, status) VALUES("admin", "$2b$08$qLiWOfBN6qpjF.ElfEToGOGM0Jpq.i.oB25mUHSaqG08nTjMIUefC", "Admin", "admin@maubazz.mu", true);
 
+INSERT INTO user_admin(username, pwd, full_name, email, status) VALUES("admin", "$2b$08$qLiWOfBN6qpjF.ElfEToGOGM0Jpq.i.oB25mUHSaqG08nTjMIUefC", "Admin", "admin@maubazz.mu", true);
 
 
