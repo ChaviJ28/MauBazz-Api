@@ -9,13 +9,14 @@ let express = require("express"),
 // login
 router.post("/login", async(req, res) => {
     try {
+        console.log(req.body)
         var sql =
             'SELECT * FROM shop_owner, shop WHERE username="' +
             req.body.data.username +
             '" AND shop_owner.shop_id = shop.shop_id';
         connection.query(sql, async(err, results) => {
             if (err) {
-                res.json(await response.error(500));
+                res.json(await response.error(500, err));
             } else {
                 if (results.length > 0) {
                     if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
@@ -94,6 +95,7 @@ router.post("/login", async(req, res) => {
             }
         });
     } catch (err) {
+        console.log(err)
         res.json(await response.error(500));
     }
 });

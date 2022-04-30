@@ -165,38 +165,10 @@ router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
                 if (err) {
                     res.json(await response.error(500, err));
                 } else {
-                    res.json(await response.success("shop categories added successfully"));
-                }
-            });
-        } else {
-            res.json(await response.error(400, "corrupt data, try again"));
-        }
-    } catch (err) {
-        console.log(err);
-        res.json(await response.error(500));
-    }
-});
-
-router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
-    try {
-        if (req.body.data && req.body.data.category && req.body.data.shop_id) {
-            var data = req.body.data,
-                sql = "";
-            var arr = Array.from(data.category);
-            arr.forEach((cat) => {
-                sql +=
-                    "INSERT INTO shop_category(shop_id, cat_id) VALUES (" +
-                    data.shop_id +
-                    ", " +
-                    cat +
-                    "); ";
-            });
-            connection.query(sql, async(err, results) => {
-                if (err) {
-                    res.json(await response.error(500, err));
-                } else {
                     res.json(
-                        await response.success("shop categories added successfully")
+                        await response.success(
+                            "shop category added successfully"
+                        )
                     );
                 }
             });
@@ -208,6 +180,31 @@ router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
         res.json(await response.error(500));
     }
 });
+
+router.post("/add-product-category", async(req, res) => {
+    try {
+        if (req.body.data && req.body.data.category && req.body.data.product_id) {
+            var data = req.body.data,
+                sql = ""
+            var arr = Array.from(data.category);
+            arr.forEach(cat => {
+                sql += "INSERT INTO product_category(product_id, cat_id) VALUES (" + data.product_id + ", " + cat + "); "
+            });
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(await response.success("product category added successfully"));
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
+    }
+})
 
 
 module.exports = router;

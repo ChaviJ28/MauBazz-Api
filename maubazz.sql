@@ -42,7 +42,7 @@ CREATE TABLE product_shop(
 CREATE TABLE product_image(
     id int NOT NULL AUTO_INCREMENT,
     product_id int NOT NULL,
-    img_url VARCHAR(255),
+    img_url MEDIUMTEXT,
     PRIMARY KEY(id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );

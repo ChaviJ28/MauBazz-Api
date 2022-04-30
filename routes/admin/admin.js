@@ -73,6 +73,32 @@ router.post("/add-category", middleware.checkAuth, async(req, res) => {
     }
 });
 
+router.post('/activate-shop-owner', middleware.checkAuth, async(req, res) => {
+    try {
+        if (req.body.data) {
+            var sql =
+                "UPDATE shop_owner SET is_active = " +
+                req.body.data.status +
+                "WHERE id= " +
+                req.body.data.owner_id;
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.json(await response.error(500, err));
+                } else {
+                    res.json(
+                        await response.success("Shop owner updated successfully")
+                    );
+                }
+            });
+        } else {
+            res.json(await response.error(400, "corrupt data, try again"));
+        }
+    } catch (err) {
+        console.log(err);
+        res.json(await response.error(500));
+    }
+})
+
 
 
 module.exports = router;

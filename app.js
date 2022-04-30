@@ -8,7 +8,8 @@ let express = require("express"),
 // set port, JSON, .env
 require("dotenv").config();
 var port = process.env.PORT;
-app.use(bodyparser.json());
+app.use(bodyparser.json({ limit: "50mb" }));
+app.use(bodyparser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
 
 //create & run sql connection
 let connection = mysql.createConnection(require('./db.js'))
@@ -18,6 +19,8 @@ connection.connect(function(err) {
     }
     console.log("Connected to the MySQL server.");
 });
+
+app.use(express.static(path.join(__dirname, "uploads")));
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname + "/views/error.html"));
@@ -40,14 +43,14 @@ app.use("/api/image", imageRoutes);
 app.use("/api/v1", publicRoutes);
 
 app.post('/api/test', (req, res) => {
-    if (process.env.NODE_ENV == 'development') {
+    if (process.env.NODE_ENV != "production") {
         connection.query(req.body.data.sql, async(err, results) => {
             if (err) {
                 res.json(err);
             } else {
                 res.json(results);
             }
-        })
+        });
     } else {
         res.json(req.body);
     }

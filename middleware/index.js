@@ -5,7 +5,7 @@ var response = require("../routes/functions/functions"),
 
 // middleware for checking api_key
 exports.checkApiKey = async(req, res, next) => {
-    if (req.body.auth && req.body.auth.api_key && req.body.auth.api_key == process.env.API_KEY) {
+    if (req.Authorization && req.Authorization == process.env.API_KEY) {
         next();
     } else {
         res.json(await response.error(403, "api-key error"));

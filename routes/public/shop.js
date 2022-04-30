@@ -92,7 +92,7 @@ router.post("/get-category", middleware.checkAuth, async(req, res) => {
                 }
             }
             var sql =
-                "SELECT * FROM category";
+                "SELECT * FROM category" + add;
             connection.query(sql, async(err, results) => {
                 if (err) {
                     res.json(await response.error(500, err));
