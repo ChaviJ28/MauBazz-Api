@@ -27,9 +27,6 @@ router.post("/login", async(req, res) => {
                             delete results[0].pwd;
                             results[0].access_type = "owner";
                             results[0].contact = JSON.parse(results[0].contact);
-                            results[0].banner_url = JSON.parse(
-                                results[0].banner_url
-                            );
                             //update login_count
                             var count = results[0].login_count + 1;
                             sql =

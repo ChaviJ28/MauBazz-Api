@@ -22,9 +22,6 @@ router.post("/get-shop", async(req, res) => {
             if (err) {
                 res.json(await response.error(500, err));
             } else {
-                results.forEach((shop) => {
-                    shop.banner_url = JSON.parse(shop.banner_url);
-                });
                 res.json(await response.respond(results));
             }
         });
@@ -65,9 +62,6 @@ router.post("/get-product", async(req, res) => {
                 res.json(await response.error(500, err));
             } else {
                 results.forEach((product) => {
-                    if (product.banner_url) {
-                        product.banner_url = JSON.parse(product.banner_url);
-                    }
                     product.size = JSON.parse(product.size);
                 });
                 res.json(await response.respond(results));

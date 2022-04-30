@@ -63,10 +63,7 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                 req.body.data.shop.logo_url.length > 0 &&
                 req.body.data.shop.color &&
                 req.body.data.shop.color != null &&
-                req.body.data.shop.color.length > 0 &&
-                req.body.data.shop.banner_url &&
-                req.body.data.shop.banner_url != null &&
-                req.body.data.shop.banner_url.length > 0
+                req.body.data.shop.color.length > 0
             ) {
 
                 var sql =
@@ -78,8 +75,6 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                     req.body.data.shop.logo_url +
                     "', color = '" +
                     req.body.data.shop.color +
-                    "', banner_url = '" +
-                    JSON.stringify(req.body.data.shop.banner_url) +
                     "' WHERE shop_id = '" +
                     req.body.data.shop.shop_id +
                     "'; UPDATE shop_owner SET is_active=true WHERE shop_id = '" +
@@ -133,6 +128,9 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                         ", " +
                         shop.shop_id +
                         ");";
+                    product.img.forEach(img => {
+                        sql += "INSRT INTO product_image(product_id, img_url, color) VALUES(" + results.insertId + ", '" + img.url + "', '" + img.color + "'); ";
+                    })
                     connection.query(sql, async(err, results) => {
                         if (err) {
                             res.json(await response.error(500, err.msg));

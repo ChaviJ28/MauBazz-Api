@@ -6,11 +6,19 @@ CREATE TABLE shop(
     brand_name VARCHAR(255),
     trade_name VARCHAR(255),
     logo_url VARCHAR(255),
-    color VARCHAR(10), 
-    banner_url JSON,
+    color VARCHAR(10),
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_on DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(shop_id)
+);
+
+CREATE TABLE shop_banner(
+    id int NOT NULL AUTO_INCREMENT,
+    shop_id int NOT NULL,
+    img_url VARCHAR(255),
+    color VARCHAR(100),
+    PRIMARY KEY(id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 
 
@@ -42,7 +50,8 @@ CREATE TABLE product_shop(
 CREATE TABLE product_image(
     id int NOT NULL AUTO_INCREMENT,
     product_id int NOT NULL,
-    img_url MEDIUMTEXT,
+    img_url VARCHAR(255),
+    color VARCHAR(100),
     PRIMARY KEY(id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
