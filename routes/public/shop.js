@@ -14,15 +14,36 @@ router.post("/get-shop", async(req, res) => {
                 add = " WHERE shop.shop_id=" + req.body.data.search.id;
             }
             if (req.body.data.search.brand_name) {
-                add = " WHERE brand_name LIKE '%" + req.body.data.search.brand_name + "%'";
+                add = " WHERE shop.brand_name LIKE '%" + req.body.data.search.brand_name + "%'";
             }
         }
-        var sql = "SELECT * FROM shop " + add;
+        var sql =
+            "SELECT * FROM shop " + add;
         connection.query(sql, async(err, results) => {
             if (err) {
                 res.json(await response.error(500, err));
             } else {
-                res.json(await response.respond(results));
+                if (req.body.data.populate) {
+                    var arr = [];
+                    results.forEach(async(shop) => {
+                        sql = "SELECT img_url FROM shop_banner WHERE shop_id=" + shop.shop_id;
+                        connection.query(sql, async(err, banner) => {
+                            if (err) {
+                                res.json(await response.error(500, err));
+                            } else {
+                                var obj = {
+                                    shop,
+                                    banner,
+                                };
+                                arr.push(obj);
+                            }
+                        });
+                    })
+                    console.log(arr)
+                    res.json(await response.respond(arr));
+                } else {
+                    res.json(await response.respond(results));
+                }
             }
         });
     } catch (err) {

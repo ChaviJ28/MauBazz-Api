@@ -16,9 +16,8 @@ CREATE TABLE shop_banner(
     id int NOT NULL AUTO_INCREMENT,
     shop_id int NOT NULL,
     img_url VARCHAR(255),
-    color VARCHAR(100),
     PRIMARY KEY(id),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
+    FOREIGN KEY (shop_id) REFERENCES shop(shop_id)
 );
 
 

@@ -34,11 +34,13 @@ const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin/admin.js");
 const ownerRoutes = require("./routes/owner/owner.js");
 const imageRoutes = require("./routes/owner/image.js");
+const bannerRoutes = require("./routes/owner/banner.js");
 const publicRoutes = require("./routes/public/shop.js");
 
 app.use("/api/", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/owner", ownerRoutes);
+app.use("/api/banner", bannerRoutes);
 app.use("/api/image", imageRoutes);
 app.use("/api/v1", publicRoutes);
 
