@@ -21,7 +21,7 @@ router.post("/get-shop", async(req, res) => {
             "SELECT * FROM shop " + add;
         connection.query(sql, async(err, results) => {
             if (err) {
-                res.json(await response.error(500, err));
+                res.status(500).json({ error: err });
             } else {
                 if (req.body.data.populate) {
                     var arr = [];
@@ -29,7 +29,7 @@ router.post("/get-shop", async(req, res) => {
                         sql = "SELECT img_url FROM shop_banner WHERE shop_id=" + shop.shop_id;
                         connection.query(sql, async(err, banner) => {
                             if (err) {
-                                res.json(await response.error(500, err));
+                                res.status(500).json({ error: err });
                             } else {
                                 var obj = {
                                     shop,
@@ -47,7 +47,8 @@ router.post("/get-shop", async(req, res) => {
             }
         });
     } catch (err) {
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
+
     }
 });
 
@@ -80,7 +81,7 @@ router.post("/get-product", async(req, res) => {
         var sql = "SELECT * FROM product, product_image" + table + add + sort;
         connection.query(sql, async(err, results) => {
             if (err) {
-                res.json(await response.error(500, err));
+                res.status(500).json({ error: err });
             } else {
                 results.forEach((product) => {
                     product.size = JSON.parse(product.size);
@@ -89,7 +90,7 @@ router.post("/get-product", async(req, res) => {
             }
         });
     } catch (err) {
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 
@@ -110,17 +111,17 @@ router.post("/get-category", middleware.checkAuth, async(req, res) => {
                 "SELECT * FROM category" + add;
             connection.query(sql, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     res.json(await response.respond(results));
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
         console.log(err);
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 

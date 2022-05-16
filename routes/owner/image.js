@@ -27,11 +27,11 @@ router.post("/add-image", upload.array("image"), async(req, res) => {
             })
             res.json(await response.respond(arr));
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
         console.log(err);
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 
@@ -47,17 +47,17 @@ router.post("/get-image", async(req, res) => {
             }
             connection.query(sql + add, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     res.json(await response.respond(results));
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
         console.log(err);
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 

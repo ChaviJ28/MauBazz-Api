@@ -19,16 +19,16 @@ router.post("/add-banner", middleware.checkAuth, async(req, res) => {
                 "')";
             connection.query(sql, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     res.json(await response.success("banner added successfully"));
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
-        res.json(await response.error(500, err));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 

@@ -20,7 +20,7 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
             );
             connection.query(sql, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     sql =
                         "INSERT INTO shop_owner(username, pwd, full_name, shop_id, contact, is_active, subscription_type) VALUES('" +
@@ -36,7 +36,7 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
                         "');";
                     connection.query(sql, async(err, results) => {
                         if (err) {
-                            res.json(await response.error(500, err));
+                            res.status(500).json({ error: err });
                         } else {
                             res.json(await response.success("shop added successfully"));
                         }
@@ -44,11 +44,10 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt shopdata, try again"));
+            res.status(500).json({ error: "corrupt shopdata, try again" });
         }
     } catch (err) {
-        console.log(err);
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 
@@ -59,17 +58,16 @@ router.post("/add-category", middleware.checkAuth, async(req, res) => {
             var sql = "INSERT INTO category(name)VALUES('" + req.body.data.name + "');";
             connection.query(sql, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     res.json(await response.success("category added successfully"));
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
-        console.log(err);
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 });
 
@@ -83,7 +81,7 @@ router.post('/activate-shop-owner', middleware.checkAuth, async(req, res) => {
                 req.body.data.owner_id;
             connection.query(sql, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     res.json(
                         await response.success("Shop owner updated successfully")
@@ -91,14 +89,13 @@ router.post('/activate-shop-owner', middleware.checkAuth, async(req, res) => {
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
         console.log(err);
-        res.json(await response.error(500));
+        res.status(500).json({ error: "Please Try Again later" });
     }
 })
-
 
 
 module.exports = router;

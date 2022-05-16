@@ -1,44 +1,27 @@
-exports.error = async(status, msg) => {
-    var code;
-    switch (status) {
-        case 400:
-            code = "Bad Request";
-            break;
-        case 401:
-            code = "Unauthorized";
-            break;
-        case 403:
-            code = "Forbidden";
-            break;
-        case 404:
-            code = "Not Found";
-            break;
-        default:
-            code = "Internal Server Error";
-            break;
-    }
+exports.error = async(msg) => {
     if (msg == undefined) {
-        msg = "Please try again later"
-    } {
-        json = {
-            status,
-            error: {
-                code,
-                msg,
-            },
-        };
+        msg = "Please try again later";
     }
-    return json;
+
+    return {
+        error: {
+            msg
+        }
+    };
 };
 
 exports.respond = async(data) => {
-    {
-        json = {
-            status: 200,
-            data,
-        };
-    }
-    return json;
+    // {
+    //     json = {
+    //         status: 200,
+    //         data,
+    //     };
+    // }
+    // return json;
+
+    res.status(200).send({
+        data
+    });
 };
 
 exports.success = async(msg) => {

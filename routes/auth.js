@@ -4,7 +4,7 @@ let express = require("express"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../db")),
     response = require("./functions/functions"),
-    middleware = require("../middleware/index");
+    middleware = require("../middleware/index")
 
 // login
 router.post("/login", async(req, res) => {
@@ -16,7 +16,7 @@ router.post("/login", async(req, res) => {
             '" AND shop_owner.shop_id = shop.shop_id';
         connection.query(sql, async(err, results) => {
             if (err) {
-                res.json(await response.error(500, err));
+                res.status(500).json({ error: err });
             } else {
                 if (results.length > 0) {
                     if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
@@ -36,38 +36,34 @@ router.post("/login", async(req, res) => {
                                 results[0].id;
                             connection.query(sql, async(err, sts) => {
                                 if (err) {
-                                    res.json(await response.error(500));
+                                    res.status(500).json({ error: err });
                                 } else {
                                     if (sts.affectedRows > 0) {
                                         results[0].login_count = count;
-                                        res.json(await response.respond(results[0]));
-                                    } else {
                                         res.json(
-                                            await response.error(
-                                                500,
-                                                "Login Error, login_count fail"
-                                            )
+                                            await response.respond(results[0])
                                         );
+                                    } else {
+                                        res.status(500).json({ error: "Login Error, login_count fail" });
                                     }
                                 }
                             });
                         } else {
-                            res.json(
-                                await response.error(
-                                    403,
-                                    "Account has been suspended"
-                                )
-                            );
+                            res
+                                .status(403)
+                                .json({ error: "Account has been suspended" });
                         }
                     } else {
-                        res.json(await response.error(401, "Wrong Password"));
+                        res.status(401).json({
+                            error: "Wrong Password",
+                        });
                     }
                 } else {
                     // check for admin here
                     var sql = 'SELECT * FROM user_admin WHERE username="' + req.body.data.username + '"';
                     connection.query(sql, async(err, results) => {
                         if (err) {
-                            res.json(await response.error(500));
+                            res.status(500).json({ error: err });
                         } else {
                             if (results.length > 0) {
                                 if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
@@ -76,15 +72,15 @@ router.post("/login", async(req, res) => {
                                         results[0].access_type = "admin";
                                         res.json(await response.respond(results[0]));
                                     } else {
-                                        res.json(
-                                            await response.error(403, "Account has been suspended")
-                                        );
+                                        res.status(403).json({ error: "Account has been suspended" });
                                     }
                                 } else {
-                                    res.json(await response.error(401, "Wrong Password"));
+                                    res.status(401).json({ error: "Wrong Password" });
                                 }
                             } else {
-                                res.json(await response.error(400, "User does not exist"));
+                                res
+                                    .status(500)
+                                    .json({ error: "User does not exist" });
                             }
                         }
                     });
@@ -114,22 +110,20 @@ router.post("/owner/change-password", middleware.checkAuth, async(req, res) => {
                         var sql = "UPDATE shop_owner set pwd = '" + hash + "' WHERE id=" + results[0].id;
                         connection.query(sql, async(err, sts) => {
                             if (err) {
-                                res.json(await response.error(500));
+                                res.status(500).json({ error: err });
                             } else {
                                 if (sts.affectedRows > 0) {
                                     res.json(await response.success("password updated successfully"));
                                 } else {
-                                    res.json(
-                                        await response.error(500, "update error")
-                                    );
+                                    res.status(500).json({ error: "update error" });
                                 }
                             }
                         });
                     } else {
-                        res.json(await response.error(400, "Wrong password"));
+                        res.status(400).json({ error: "Wrong password" });
                     }
                 } else {
-                    res.json(await response.error(400, "User does not exist"));
+                    res.status(400).json({ error: "User does not exist" });
                 }
             }
         })
