@@ -46,3 +46,22 @@ exports.checkAuth = async(req, res, next) => {
         res.status(401).json({ error: "User does not exist" });
     }
 };
+
+exports.userExists = async(req, res, next) => {
+    if (req.body.data && req.body.data.shop && req.body.data.shop.username) {
+        var username = req.body.data.shop.username;
+        var sql = "SELECT COUNT(1) FROM shop_owner WHERE username = '" + username + "';";
+        connection.query(sql, async(err, results) => {
+            if (err) {
+                res.status(500).json({ error: err });
+            } else {
+                console.log(results)
+                if (results == 0) {
+                    next();
+                } else {
+                    res.status(400).json({ error: "Username Taken" });
+                }
+            }
+        })
+    }
+}

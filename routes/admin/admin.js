@@ -8,7 +8,7 @@ let express = require("express"),
 //add-shop, deactivate-shop
 
 
-router.post("/add-shop", middleware.checkAuth, async(req, res) => {
+router.post("/add-shop", middleware.checkAuth, middleware.userExists, async(req, res) => {
     try {
         if (req.body.data && req.body.data.shop) {
             var data = req.body.data.shop;
@@ -24,7 +24,9 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
                     sql =
                         "INSERT INTO shop_owner(username, pwd, full_name, shop_id, contact, is_active, subscription_type) VALUES('" +
                         data.username +
-                        "', '" + hash + "', '" +
+                        "', '" +
+                        hash +
+                        "', '" +
                         data.ownername +
                         "', " +
                         results.insertId +
@@ -37,7 +39,9 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
                         if (err) {
                             res.status(500).json({ error: err });
                         } else {
-                            res.status(200).send({ success: "shop added successfully" });
+                            res
+                                .status(200)
+                                .send({ success: "shop added successfully" });
                         }
                     });
                 }
