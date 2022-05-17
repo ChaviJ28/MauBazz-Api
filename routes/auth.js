@@ -3,7 +3,6 @@ let express = require("express"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../db")),
-    response = require("./functions/functions"),
     middleware = require("../middleware/index")
 
 // login
@@ -40,9 +39,7 @@ router.post("/login", async(req, res) => {
                                 } else {
                                     if (sts.affectedRows > 0) {
                                         results[0].login_count = count;
-                                        res.json(
-                                            await response.respond(results[0])
-                                        );
+                                        res.status(200).send({ data: results[0] });
                                     } else {
                                         res.status(500).json({ error: "Login Error, login_count fail" });
                                     }
@@ -68,9 +65,10 @@ router.post("/login", async(req, res) => {
                             if (results.length > 0) {
                                 if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
                                     if (results[0].status == 1) {
+                                        ``
                                         delete results[0].pwd;
                                         results[0].access_type = "admin";
-                                        res.json(await response.respond(results[0]));
+                                        res.status(200).send({ data: results[0] });
                                     } else {
                                         res.status(403).json({ error: "Account has been suspended" });
                                     }
@@ -89,7 +87,7 @@ router.post("/login", async(req, res) => {
         });
     } catch (err) {
         console.log(err)
-        res.json(await response.error(500));
+        res.status(500).json({ error: err });
     }
 });
 
@@ -102,7 +100,7 @@ router.post("/owner/change-password", middleware.checkAuth, async(req, res) => {
             '"';
         connection.query(sql, async(err, results) => {
             if (err) {
-                res.json(await response.error(500));
+                res.status(500).json({ error: err });
             } else {
                 if (results.length > 0) {
                     if (req.body.data.oldpassword && req.body.data.password && bcrypt.compareSync(req.body.data.oldpassword, results[0].pwd)) {
@@ -113,7 +111,7 @@ router.post("/owner/change-password", middleware.checkAuth, async(req, res) => {
                                 res.status(500).json({ error: err });
                             } else {
                                 if (sts.affectedRows > 0) {
-                                    res.json(await response.success("password updated successfully"));
+                                    res.status(200).send({ success: "password updated successfully" });
                                 } else {
                                     res.status(500).json({ error: "update error" });
                                 }
@@ -128,7 +126,7 @@ router.post("/owner/change-password", middleware.checkAuth, async(req, res) => {
             }
         })
     } catch (err) {
-        res.json(await response.error(500, err));
+        res.status(500).json({ error: err });
     }
 })
 

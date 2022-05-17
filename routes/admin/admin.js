@@ -3,7 +3,6 @@ let express = require("express"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 //add-shop, deactivate-shop
@@ -38,7 +37,7 @@ router.post("/add-shop", middleware.checkAuth, async(req, res) => {
                         if (err) {
                             res.status(500).json({ error: err });
                         } else {
-                            res.json(await response.success("shop added successfully"));
+                            res.status(200).send({ success: "shop added successfully" });
                         }
                     });
                 }
@@ -60,7 +59,7 @@ router.post("/add-category", middleware.checkAuth, async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(await response.success("category added successfully"));
+                    res.status(200).send({ success: "category added successfully" });
                 }
             });
         } else {
@@ -83,9 +82,7 @@ router.post('/activate-shop-owner', middleware.checkAuth, async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(
-                        await response.success("Shop owner updated successfully")
-                    );
+                    res.status(200).send({ success: "Shop owner updated successfully" });
                 }
             });
         } else {

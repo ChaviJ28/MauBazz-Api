@@ -3,7 +3,6 @@ let express = require("express"),
     mysql = require("mysql"),
     multer = require("multer"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 const storage = multer.diskStorage({
@@ -25,7 +24,7 @@ router.post("/add-image", upload.array("image"), async(req, res) => {
             req.files.forEach(img => {
                 arr.push(img.filename);
             })
-            res.json(await response.respond(arr));
+            res.status(200).send({ data: arr });
         } else {
             res.status(400).json({ error: "corrupt data, try again" });
         }
@@ -49,7 +48,7 @@ router.post("/get-image", async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(await response.respond(results));
+                    res.status(200).send({ data: results });
                 }
             });
         } else {

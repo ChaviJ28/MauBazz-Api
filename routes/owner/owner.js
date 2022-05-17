@@ -3,7 +3,6 @@ let express = require("express"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 // DONE : update-shop, update-shop-owner, change-pwd, add-product
@@ -30,19 +29,19 @@ router.post("/update", middleware.checkAuth, async(req, res) => {
                     "';";
                 connection.query(sql, async(err, results) => {
                     if (err) {
-                        res.json(await response.error(500, err));
+                        res.status(500).json({ error: err });
                     } else {
-                        res.json(await response.success("owner details updated successfully"));
+                        res.status(200).send({ success: "owner details updated successfully" });
                     }
                 });
             } else {
-                res.json(await response.error(400, "Incomplete Data"));
+                res.status(400).json({ error: "Incomplete Data" });
             }
         } else {
-            res.json(await response.error(400, "No Data"));
+            res.status(400).json({ error: "No Data" });
         }
     } catch (err) {
-        res.json(await response.error(500, err));
+        res.status(500).json({ error: err });
     }
 });
 
@@ -82,19 +81,19 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                     "';";
                 connection.query(sql, async(err, results) => {
                     if (err) {
-                        res.json(await response.error(500, err));
+                        res.status(500).json({ error: err });
                     } else {
-                        res.json(await response.success("shop updated successfully"));
+                        res.status(200).send({ success: "shop updated successfully" });
                     }
                 });
             } else {
-                res.json(await response.error(400, "Incomplete Data"));
+                res.status(400).json({ error: "Incomplete Data" });
             }
         } else {
-            res.json(await response.error(400, "No Data"));
+            res.status(400).json({ error: "No Data" });
         }
     } catch (err) {
-        res.json(await response.error(500, err));
+        res.status(500).json({ error: err });
     }
 });
 
@@ -120,7 +119,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                 ");";
             connection.query(sql, async(err, results) => {
                 if (err) {
-                    res.json(await response.error(500, err));
+                    res.status(500).json({ error: err });
                 } else {
                     sql =
                         "INSERT INTO product_shop(product_id, shop_id) VALUES(" +
@@ -133,19 +132,21 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                     })
                     connection.query(sql, async(err, results) => {
                         if (err) {
-                            res.json(await response.error(500, err.msg));
+                            res.status(500).json({ error: err });
                         } else {
-                            res.json(await response.success("product added successfully"));
+                            res
+                                .status(200)
+                                .send({ success: "product added successfully" });
                         }
                     });
                 }
             });
         } else {
-            res.json(await response.error(400, "corrupt data, try again"));
+            res.status(400).json({ error: "corrupt data, try again" });
         }
     } catch (err) {
         console.log(err);
-        res.json(await response.error(500, err));
+        res.status(500).json({ error: err });
     }
 });
 
@@ -163,11 +164,7 @@ router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(
-                        await response.success(
-                            "shop category added successfully"
-                        )
-                    );
+                    res.status(200).send({ success: "shop category added successfully" });
                 }
             });
         } else {
@@ -192,7 +189,7 @@ router.post("/add-product-category", async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(await response.success("product category added successfully"));
+                    res.status(200).send({ success: "product category added successfully" });
                 }
             });
         } else {

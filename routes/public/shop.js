@@ -2,7 +2,6 @@ let express = require("express"),
     router = express.Router(),
     mysql = require("mysql"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 
@@ -39,10 +38,9 @@ router.post("/get-shop", async(req, res) => {
                             }
                         });
                     })
-                    console.log(arr)
-                    res.json(await response.respond(arr));
+                    res.status(200).send({ data: arr });
                 } else {
-                    res.json(await response.respond(results));
+                    res.status(200).send({ data: results });
                 }
             }
         });
@@ -86,7 +84,7 @@ router.post("/get-product", async(req, res) => {
                 results.forEach((product) => {
                     product.size = JSON.parse(product.size);
                 });
-                res.json(await response.respond(results));
+                res.status(200).send({ data: results });
             }
         });
     } catch (err) {
@@ -113,7 +111,7 @@ router.post("/get-category", middleware.checkAuth, async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(await response.respond(results));
+                    res.status(200).send({ data: results });
                 }
             });
         } else {

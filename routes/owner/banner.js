@@ -3,7 +3,6 @@ let express = require("express"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     connection = mysql.createConnection(require("../../db")),
-    response = require("../functions/functions"),
     middleware = require("../../middleware/index");
 
 
@@ -21,7 +20,7 @@ router.post("/add-banner", middleware.checkAuth, async(req, res) => {
                 if (err) {
                     res.status(500).json({ error: err });
                 } else {
-                    res.json(await response.success("banner added successfully"));
+                    res.status(200).send({ success: "banner added successfully" });
                 }
             });
         } else {
