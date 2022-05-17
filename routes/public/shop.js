@@ -16,6 +16,9 @@ router.post("/get-shop", async(req, res) => {
                 add = " WHERE shop.brand_name LIKE '%" + req.body.data.search.brand_name + "%'";
             }
         }
+        if (req.body.data.populate) {
+            add += "; SELECT * FROM shop_banner";
+        }
         var sql =
             "SELECT * FROM shop " + add;
         connection.query(sql, async(err, results) => {
@@ -23,23 +26,46 @@ router.post("/get-shop", async(req, res) => {
                 res.status(500).json({ error: err });
             } else {
                 if (req.body.data.populate) {
-                    var arr = [];
-                    results.forEach(async(shop) => {
-                        sql = "SELECT img_url FROM shop_banner WHERE shop_id=" + shop.shop_id;
-                        connection.query(sql, async(err, banner) => {
-                            if (err) {
-                                res.status(500).json({ error: err });
-                            } else {
-                                var obj = {
-                                    shop,
-                                    banner,
-                                };
-                                arr.push(obj);
-                            }
-                        });
-                    })
-                    res.status(200).send({ data: arr });
+                    let arr = [];
+                    results[0].forEach(async(shop) => {
+                        var banners = [];
+                        results[1]
+                            .filter(x => x.shop_id === shop.shop_id)
+                            .forEach(o => {
+                                banners.push(o.img_url)
+                            });
+                        shop.banners = banners
+                        arr.push(shop)
+                    });
+
+                    // var arr = new Array();
+                    // await results.forEach((shop) => {
+                    //     sql =
+                    //         "SELECT img_url FROM shop_banner WHERE shop_id=" +
+                    //         shop.shop_id;
+                    //     connection.query(sql, (err, banners) => {
+                    //         if (err) {
+                    //             res.status(500).json({ error: err });
+                    //         } else {
+                    //             var banner = [];
+                    //             banners.forEach((ban) => {
+                    //                 banner.push(ban.img_url);
+                    //             });
+                    //             var obj = {
+                    //                 shop: shop.color,
+                    //                 banner: banner,
+                    //             };
+                    //             console.log(obj);
+                    //             arr.push(shop);
+                    //             console.log(arr);
+                    //         }
+                    //     });
+                    // })
+                    // alert("ad")
+                    // console.log(arr)
+                    res.json({ data: arr });
                 } else {
+                    console.log(results);
                     res.status(200).send({ data: results });
                 }
             }
@@ -122,6 +148,19 @@ router.post("/get-category", middleware.checkAuth, async(req, res) => {
         res.status(500).json({ error: "Please Try Again later" });
     }
 });
+
+async function getShopBanner(shopid) {
+    sql = "SELECT img_url FROM shop_banner WHERE shop_id=" + shopid;
+    connection.query(sql, (err, banners) => {
+
+        var banner = [];
+        banners.forEach((ban) => {
+            banner.push(ban.img_url);
+        });
+        console.log(banner)
+        return banner;
+    });
+}
 
 
 module.exports = router;
