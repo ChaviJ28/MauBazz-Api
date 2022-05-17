@@ -37,32 +37,6 @@ router.post("/get-shop", async(req, res) => {
                         shop.banners = banners
                         arr.push(shop)
                     });
-
-                    // var arr = new Array();
-                    // await results.forEach((shop) => {
-                    //     sql =
-                    //         "SELECT img_url FROM shop_banner WHERE shop_id=" +
-                    //         shop.shop_id;
-                    //     connection.query(sql, (err, banners) => {
-                    //         if (err) {
-                    //             res.status(500).json({ error: err });
-                    //         } else {
-                    //             var banner = [];
-                    //             banners.forEach((ban) => {
-                    //                 banner.push(ban.img_url);
-                    //             });
-                    //             var obj = {
-                    //                 shop: shop.color,
-                    //                 banner: banner,
-                    //             };
-                    //             console.log(obj);
-                    //             arr.push(shop);
-                    //             console.log(arr);
-                    //         }
-                    //     });
-                    // })
-                    // alert("ad")
-                    // console.log(arr)
                     res.json({ data: arr });
                 } else {
                     console.log(results);
