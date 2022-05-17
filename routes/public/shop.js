@@ -97,6 +97,7 @@ router.post("/get-product", async(req, res) => {
 router.post("/get-category", middleware.checkAuth, async(req, res) => {
     try {
         if (req.body.data) {
+            var add = ""
             if (req.body.data.search) {
                 if (req.body.data.search.shop_id) {
                     add = " WHERE shop_id=" + req.body.data.search.shop_id;
@@ -105,8 +106,7 @@ router.post("/get-category", middleware.checkAuth, async(req, res) => {
                     add = " WHERE cat_id=" + req.body.data.search.cat_id;
                 }
             }
-            var sql =
-                "SELECT * FROM category" + add;
+            var sql = "SELECT * FROM category" + add;
             connection.query(sql, async(err, results) => {
                 if (err) {
                     res.status(500).json({ error: err });
