@@ -62,9 +62,11 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
                 req.body.data.shop.logo_url.length > 0 &&
                 req.body.data.shop.color &&
                 req.body.data.shop.color != null &&
-                req.body.data.shop.color.length > 0
+                req.body.data.shop.color.length > 0 &&
+                req.body.data.shop.category &&
+                req.body.data.shop.category.length > 0
             ) {
-
+                //update shop, update is_active
                 var sql =
                     "UPDATE shop SET brand_name = '" +
                     req.body.data.shop.brand_name +
@@ -104,7 +106,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
             var product = req.body.data.product;
             var shop = req.body.data.shop;
             var sql =
-                "INSERT INTO product(title, descri, price, color, size, stock) VALUES('" +
+                "INSERT INTO product(title, descri, price, color, size, stock, discount) VALUES('" +
                 product.title +
                 "', '" +
                 product.description +
@@ -116,7 +118,10 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                 JSON.stringify(product.size) +
                 "', " +
                 product.stock +
+                ", " +
+                product.discount +
                 ");";
+
             connection.query(sql, async(err, results) => {
                 if (err) {
                     res.status(500).json({ error: err });
@@ -127,9 +132,18 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                         ", " +
                         shop.shop_id +
                         ");";
-                    product.img.forEach(img => {
-                        sql += "INSRT INTO product_image(product_id, img_url, color) VALUES(" + results.insertId + ", '" + img.url + "', '" + img.color + "'); ";
-                    })
+                    product.image.forEach(img => {
+                            sql += "INSRT INTO product_image(product_id, img_url, color) VALUES(" + results.insertId + ", '" + img.url + "', '" + img.color + "'); ";
+                        })
+                        // var arr = Array.from();
+                    product.category.forEach((cat) => {
+                        sql +=
+                            "INSERT INTO product_category(product_id, cat_id) VALUES (" +
+                            data.product_id +
+                            ", " +
+                            cat +
+                            "); ";
+                    });
                     connection.query(sql, async(err, results) => {
                         if (err) {
                             res.status(500).json({ error: err });
@@ -150,7 +164,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
     }
 });
 
-//add-category
+//add-shop-category
 router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
     try {
         if (req.body.data && req.body.data.category && req.body.data.shop_id) {
@@ -175,31 +189,6 @@ router.post("/add-shop-category", middleware.checkAuth, async(req, res) => {
         res.status(500).json({ error: "Please Try Again later" });
     }
 });
-
-router.post("/add-product-category", async(req, res) => {
-    try {
-        if (req.body.data && req.body.data.category && req.body.data.product_id) {
-            var data = req.body.data,
-                sql = ""
-            var arr = Array.from(data.category);
-            arr.forEach(cat => {
-                sql += "INSERT INTO product_category(product_id, cat_id) VALUES (" + data.product_id + ", " + cat + "); "
-            });
-            connection.query(sql, async(err, results) => {
-                if (err) {
-                    res.status(500).json({ error: err });
-                } else {
-                    res.status(200).send({ success: "product category added successfully" });
-                }
-            });
-        } else {
-            res.status(400).json({ error: "corrupt data, try again" });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: "Please Try Again later" });
-    }
-})
 
 
 module.exports = router;

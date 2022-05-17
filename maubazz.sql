@@ -27,6 +27,7 @@ CREATE TABLE product(
     descri VARCHAR(255),
     price DECIMAL(10, 2),
     on_discount BOOLEAN,
+    /* not yet implemented on_discount, to update according to promotions*/
     discount DECIMAL(10, 2),
     color JSON, 
     size JSON,
