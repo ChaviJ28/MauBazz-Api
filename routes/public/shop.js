@@ -10,7 +10,9 @@ router.post("/get-shop", async(req, res) => {
         var add = "";
         if (req.body.data.search) {
             if (req.body.data.search.id) {
-                add = " WHERE shop.shop_id=" + req.body.data.search.id;
+                add =
+                    ", shop_owner WHERE shop.shop_id = shop_owner.shop_id && shop.shop_id=" +
+                    req.body.data.search.id;
             }
             if (req.body.data.search.brand_name) {
                 add = " WHERE shop.brand_name LIKE '%" + req.body.data.search.brand_name + "%'";
@@ -74,7 +76,10 @@ router.post("/get-product", async(req, res) => {
                 sort += " DESC ";
             }
         }
-        var sql = "SELECT * FROM product_image; SELECT * FROM product" + add + sort;
+        var sql =
+            "SELECT * FROM product_image; SELECT * FROM product_shop;  SELECT * FROM product_category; SELECT * FROM product" +
+            add +
+            sort;
         if (req.body.data.populate) {
             sql += "; SELECT * FROM shop";
         }
@@ -83,14 +88,13 @@ router.post("/get-product", async(req, res) => {
             if (err) {
                 res.status(500).json({ error: err });
             } else {
-                // results.forEach((product) => {
-                //     product.size = JSON.parse(product.size);
-                // });
                 let arr = [];
-                results[1].forEach((product) => {
-                    var images = [];
+                results[3].forEach((product) => {
+                    var images = [],
+                        category = [];
                     product.size = JSON.parse(product.size);
                     product.color = JSON.parse(product.color);
+
                     results[0]
                         .filter((x) => x.product_id === product.product_id)
                         .forEach((o) => {
@@ -100,6 +104,21 @@ router.post("/get-product", async(req, res) => {
                             });
                         });
                     product.images = images;
+
+                    results[2]
+                        .filter((x) => x.product_id === product.product_id)
+                        .forEach((o) => {
+                            category.push(o.cat_id);
+                        });
+                    product.category = category;
+
+                    var shop_id = results[1].filter((x) => x.product_id === product.product_id)[0].shop_id;
+                    if (req.body.data.populate) {
+                        product.shop = results[4].filter((x) => x.shop_id === shop_id)[0];
+                    } else {
+                        product.shop = { shop_id };
+                    }
+
                     arr.push(product);
                 });
                 res.status(200).send({ data: arr });
