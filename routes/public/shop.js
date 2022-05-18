@@ -67,24 +67,42 @@ router.post("/get-product", async(req, res) => {
                 add = " WHERE shop_id=" + req.body.data.search.shop;
             }
         }
-        if (req.body.data.populate) {
-            table = ", shop";
-        }
+
         if (req.body.data.sort && req.body.data.sort.by) {
             sort = " ORDER BY " + req.body.data.sort.by
             if (!req.body.data.sort.asc) {
                 sort += " DESC ";
             }
         }
-        var sql = "SELECT * FROM product, product_image" + table + add + sort;
+        var sql = "SELECT * FROM product_image; SELECT * FROM product" + add + sort;
+        if (req.body.data.populate) {
+            sql += "; SELECT * FROM shop";
+        }
+        // console.log(sql)
         connection.query(sql, async(err, results) => {
             if (err) {
                 res.status(500).json({ error: err });
             } else {
-                results.forEach((product) => {
+                // results.forEach((product) => {
+                //     product.size = JSON.parse(product.size);
+                // });
+                let arr = [];
+                results[1].forEach((product) => {
+                    var images = [];
                     product.size = JSON.parse(product.size);
+                    product.color = JSON.parse(product.color);
+                    results[0]
+                        .filter((x) => x.product_id === product.product_id)
+                        .forEach((o) => {
+                            images.push({
+                                img_url: o.img_url,
+                                color: o.color,
+                            });
+                        });
+                    product.images = images;
+                    arr.push(product);
                 });
-                res.status(200).send({ data: results });
+                res.status(200).send({ data: arr });
             }
         });
     } catch (err) {
@@ -122,19 +140,6 @@ router.post("/get-category", middleware.checkAuth, async(req, res) => {
         res.status(500).json({ error: "Please Try Again later" });
     }
 });
-
-async function getShopBanner(shopid) {
-    sql = "SELECT img_url FROM shop_banner WHERE shop_id=" + shopid;
-    connection.query(sql, (err, banners) => {
-
-        var banner = [];
-        banners.forEach((ban) => {
-            banner.push(ban.img_url);
-        });
-        console.log(banner)
-        return banner;
-    });
-}
 
 
 module.exports = router;

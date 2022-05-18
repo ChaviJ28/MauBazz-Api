@@ -106,7 +106,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
             var product = req.body.data.product;
             var shop = req.body.data.shop;
             var sql =
-                "INSERT INTO product(title, descri, price, color, size, stock, discount) VALUES('" +
+                "INSERT INTO product(title, descri, price, color, size, stock, discount, on_discount) VALUES('" +
                 product.title +
                 "', '" +
                 product.description +
@@ -120,7 +120,7 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                 product.stock +
                 ", " +
                 product.discount +
-                ");";
+                ", true );";
 
             connection.query(sql, async(err, results) => {
                 if (err) {
@@ -133,13 +133,13 @@ router.post("/add-product", middleware.checkAuth, async(req, res) => {
                         shop.shop_id +
                         ");";
                     product.image.forEach(img => {
-                            sql += "INSRT INTO product_image(product_id, img_url, color) VALUES(" + results.insertId + ", '" + img.url + "', '" + img.color + "'); ";
+                            sql += "INSERT INTO product_image(product_id, img_url, color) VALUES(" + results.insertId + ", '" + img.url + "', '" + img.color + "'); ";
                         })
                         // var arr = Array.from();
                     product.category.forEach((cat) => {
                         sql +=
                             "INSERT INTO product_category(product_id, cat_id) VALUES (" +
-                            data.product_id +
+                            results.insertId +
                             ", " +
                             cat +
                             "); ";
