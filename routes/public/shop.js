@@ -19,7 +19,7 @@ router.post("/get-shop", async(req, res) => {
             }
         }
         if (req.body.data.populate) {
-            add += "; SELECT * FROM shop_banner";
+            add += "; SELECT * FROM shop_banner; SELECT * FROM shop_category";
         }
         var sql =
             "SELECT * FROM shop " + add;
@@ -30,13 +30,20 @@ router.post("/get-shop", async(req, res) => {
                 if (req.body.data.populate) {
                     let arr = [];
                     results[0].forEach(async(shop) => {
-                        var banners = [];
+                        var banners = [],
+                            category = [];
                         results[1]
                             .filter(x => x.shop_id === shop.shop_id)
                             .forEach(o => {
                                 banners.push(o.img_url)
                             });
-                        shop.banners = banners
+                        results[2]
+                            .filter((x) => x.shop_id === shop.shop_id)
+                            .forEach((o) => {
+                                category.push(o.cat_id);
+                            });
+                        shop.banners = banners;
+                        shop.category = categor - shop;
                         arr.push(shop)
                     });
                     res.json({ data: arr });
