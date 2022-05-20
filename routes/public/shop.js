@@ -43,7 +43,7 @@ router.post("/get-shop", async(req, res) => {
                                 category.push(o.cat_id);
                             });
                         shop.banners = banners;
-                        shop.category = categor - shop;
+                        shop.category = category;
                         arr.push(shop)
                     });
                     res.json({ data: arr });
