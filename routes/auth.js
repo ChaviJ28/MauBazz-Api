@@ -5,10 +5,9 @@ let express = require("express"),
     connection = mysql.createConnection(require("../db")),
     middleware = require("../middleware/index")
 
-// login
+// login for website
 router.post("/login", async(req, res) => {
     try {
-        console.log(req.body)
         var sql =
             'SELECT * FROM shop_owner, shop WHERE username="' +
             req.body.data.username +
@@ -39,7 +38,7 @@ router.post("/login", async(req, res) => {
                                 } else {
                                     if (sts.affectedRows > 0) {
                                         results[0].login_count = count;
-                                        res.status(200).send({ data: results[0] });
+                                        res.status(200).json({ data: results[0] });
                                     } else {
                                         res.status(500).json({ error: "Login Error, login_count fail" });
                                     }
@@ -77,7 +76,7 @@ router.post("/login", async(req, res) => {
                                 }
                             } else {
                                 res
-                                    .status(500)
+                                    .status(400)
                                     .json({ error: "User does not exist" });
                             }
                         }
@@ -118,7 +117,7 @@ router.post("/owner/change-password", middleware.checkAuth, async(req, res) => {
                             }
                         });
                     } else {
-                        res.status(400).json({ error: "Wrong password" });
+                        res.status(401).json({ error: "Wrong password" });
                     }
                 } else {
                     res.status(400).json({ error: "User does not exist" });

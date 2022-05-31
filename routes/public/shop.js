@@ -48,7 +48,6 @@ router.post("/get-shop", async(req, res) => {
                     });
                     res.json({ data: arr });
                 } else {
-                    console.log(results);
                     res.status(200).send({ data: results });
                 }
             }
