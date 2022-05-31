@@ -37,6 +37,8 @@ const imageRoutes = require("./routes/owner/image.js");
 const bannerRoutes = require("./routes/owner/banner.js");
 const publicShopRoutes = require("./routes/public/shop.js");
 const userRoutes = require("./routes/public/user.js");
+const cartRoutes = require("./routes/public/cart.js");
+const ordersRoutes = require("./routes/public/orders.js");
 
 app.use("/api/", authRoutes);
 app.use("/api/admin", adminRoutes);
@@ -45,6 +47,8 @@ app.use("/api/banner", bannerRoutes);
 app.use("/api/image", imageRoutes);
 app.use("/api/v1", publicShopRoutes);
 app.use("/api/v1", userRoutes);
+app.use("/api/v1", cartRoutes);
+app.use("/api/v1", ordersRoutes);
 
 app.post('/api/test', (req, res) => {
     if (process.env.NODE_ENV != "production") {
