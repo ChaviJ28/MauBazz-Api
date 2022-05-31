@@ -73,6 +73,7 @@ router.post("/login", async(req, res) => {
                                     delete user.pwd;
                                     user.contact = JSON.parse(user.contact);
                                     user.card_details = JSON.parse(user.card_details);
+                                    user.access_type = "user";
                                     res.status(200).json({ data: user });
                                 } else {
                                     res.status(401).json({
@@ -167,9 +168,6 @@ router.post("/user/get-user", middleware.checkAuth, async(req, res) => {
         if (req.body.data.populate) {
             add += "; SELECT * FROM cart; SELECT * FROM orders";
         }
-        // if (req.body.data.populate) {
-        //     add += "; SELECT * FROM cart; SELECT * FROM orders";
-        // }
         var sql = "SELECT * FROM user" + add;
 
         connection.query(sql, async(err, results) => {
@@ -194,6 +192,12 @@ router.post("/user/get-user", middleware.checkAuth, async(req, res) => {
     }
 });
 
-router.post("/update-user");
+router.post("/update-user", middleware.checkAuth, async(req, res) => {
+    try {
+
+    } catch (err) {
+        res.status(500).json({ error: "Please Try Again later" });
+    }
+});
 
 module.exports = router;

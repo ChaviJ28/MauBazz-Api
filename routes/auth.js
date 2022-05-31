@@ -64,7 +64,6 @@ router.post("/login", async(req, res) => {
                             if (results.length > 0) {
                                 if (bcrypt.compareSync(req.body.data.password, results[0].pwd)) {
                                     if (results[0].status == 1) {
-                                        ``
                                         delete results[0].pwd;
                                         results[0].access_type = "admin";
                                         res.status(200).send({ data: results[0] });

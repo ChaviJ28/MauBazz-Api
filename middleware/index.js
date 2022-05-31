@@ -39,6 +39,19 @@ exports.checkAuth = async(req, res, next) => {
                     }
                 }
             })
+        } else if (req.body.auth.user.access_type == "user") {
+            var sql = 'SELECT username FROM user WHERE username="' + req.body.auth.user.username + '"'
+            connection.query(sql, async(err, results) => {
+                if (err) {
+                    res.status(500).json({ error: err });
+                } else {
+                    if (results.length > 0) {
+                        next();
+                    } else {
+                        res.status(403).json({ error: "Suspended Account, try login again" });
+                    }
+                }
+            })
         } else {
             res.status(400).json({ error: "corrupt userdata, login again" });
         }
