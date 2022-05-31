@@ -48,7 +48,11 @@ exports.checkAuth = async(req, res, next) => {
                     if (results.length > 0) {
                         next();
                     } else {
-                        res.status(403).json({ error: "Suspended Account, try login again" });
+                        res
+                            .status(403)
+                            .json({
+                                error: "Account does not exist or has been suspended",
+                            });
                     }
                 }
             })

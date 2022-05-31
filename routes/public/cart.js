@@ -10,7 +10,7 @@ router.post("/add-cart", middleware.checkAuth, async(req, res) => {
     try {
         if (req.body.data) {
             var cart = req.body.data,
-                sql = "INSERT INTO cart(product_id,usr_id,quantity) VALUES(" + cart.product + ", " + req.body.auth.user.user.usr_id + ", " + cart.quantity + ")";
+                sql = "INSERT INTO cart(product_id,usr_id,quantity) VALUES(" + cart.product + ", " + req.body.auth.user.usr_id + ", " + cart.quantity + ")";
             connection.query(sql, async(err, results) => {
                 if (err) {
                     res.status(500).json({ error: err });
