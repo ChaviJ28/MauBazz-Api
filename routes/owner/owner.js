@@ -102,6 +102,8 @@ router.post("/update-shop", middleware.checkAuth, async(req, res) => {
 //  add-product, TODO: add category,
 router.post("/add-product", middleware.checkAuth, async(req, res) => {
     try {
+        console.log(req.body);
+        console.log(req);
         if (req.body.data && req.body.data.product && req.body.data.shop) {
             var product = req.body.data.product;
             var shop = req.body.data.shop;
