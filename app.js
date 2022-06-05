@@ -11,7 +11,7 @@ require("dotenv").config();
 var port = process.env.PORT;
 app.use(bodyparser.json({ limit: "50mb" }));
 app.use(bodyparser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
-ap.use(cors());
+app.use(cors());
 
 //create & run sql connection
 let connection = mysql.createConnection(require('./db.js'))
