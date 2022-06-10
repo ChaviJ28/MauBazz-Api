@@ -31,6 +31,7 @@ router.post("/get-shop", async(req, res) => {
                     let arr = [];
                     results[0].forEach(async(shop) => {
                         var banners = [],
+                            owner = {},
                             category = [];
                         results[1]
                             .filter(x => x.shop_id === shop.shop_id)
@@ -46,10 +47,11 @@ router.post("/get-shop", async(req, res) => {
                             .filter((x) => x.shop_id === shop.shop_id)
                             .forEach((o) => {
                                 shop.contact = JSON.parse(o.contact)
-                                shop.owner.username = JSON.parse(o.username);
-                                shop.owner.name = JSON.parse(o.full_name);
-                                shop.is_active = JSON.parse(o.is_active);
-                                shop.type = JSON.parse(o.subscription_type);
+                                shop.is_active = o.is_active;
+                                shop.type = o.subscription_type;
+                                owner.username = o.username;
+                                owner.name = o.full_name;
+                                shop.owner = owner;
                             });
                         shop.banners = banners;
                         shop.category = category;
