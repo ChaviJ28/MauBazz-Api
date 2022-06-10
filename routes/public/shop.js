@@ -19,7 +19,7 @@ router.post("/get-shop", async(req, res) => {
             }
         }
         if (req.body.data.populate) {
-            add += "; SELECT * FROM shop_banner; SELECT * FROM shop_category";
+            add += "; SELECT * FROM shop_banner; SELECT * FROM shop_category; SELECT * FROM shop_owner;";
         }
         var sql =
             "SELECT * FROM shop " + add;
@@ -41,6 +41,15 @@ router.post("/get-shop", async(req, res) => {
                             .filter((x) => x.shop_id === shop.shop_id)
                             .forEach((o) => {
                                 category.push(o.cat_id);
+                            });
+                        results[3]
+                            .filter((x) => x.shop_id === shop.shop_id)
+                            .forEach((o) => {
+                                shop.contact = JSON.parse(o.contact)
+                                shop.owner.username = JSON.parse(o.username);
+                                shop.owner.name = JSON.parse(o.full_name);
+                                shop.is_active = JSON.parse(o.is_active);
+                                shop.type = JSON.parse(o.subscription_type);
                             });
                         shop.banners = banners;
                         shop.category = category;
